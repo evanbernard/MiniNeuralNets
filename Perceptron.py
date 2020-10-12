@@ -52,6 +52,7 @@ if __name__ == "__main__":
 
     training_outputs = np.array([0, 0, 0, 1, 1])
 
+    # notice this input is unique from the inputs trained
     input_vals = [0, 0, 0, 1]
     output = predict(train(training_inputs, training_outputs, num_iterations=10000), input_vals)
     prediction = round(output)

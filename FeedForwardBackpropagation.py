@@ -21,8 +21,8 @@ def train(t_inputs, t_outputs, num_iterations=1000):
         for i in range(len(t_inputs)):
             input_layer = t_inputs[i]
             neuron_val = np.dot(input_layer, weights.T)
-            output = sigmoid(neuron_val)
-            outputs = np.append(outputs, output)
+            y_hat = sigmoid(neuron_val)
+            outputs = np.append(outputs, y_hat)
 
         t_errors = (t_outputs.T - outputs) * (outputs * (1 - outputs))
 

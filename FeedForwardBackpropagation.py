@@ -6,7 +6,7 @@ from CostFunctions import *
 # I -- N - O
 #     /
 # I -
-# The neural net is trained via backpropagation
+# The neural net is considered to be feed forward and it is trained via backpropagation
 
 
 def train(t_inputs, t_outputs, num_iterations=1000):

@@ -17,6 +17,4 @@ if __name__ == "__main__":
 
     input_vals = np.array([0, 1, 1, 0])
 
-    _, prediction, error = nn.predict(input_vals)
-    print("INPUT \n {}".format(input_vals))
-    print("PREDICTION \t\t ERROR \n {} \t\t\t {}".format(prediction, error))
+    nn.predict(input_vals)

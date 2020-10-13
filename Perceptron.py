@@ -23,10 +23,15 @@ class Perceptron:
     def train(self, x, y, iterations, train_func):
         self.weights, self.accuracy = train_func(x, y, iterations, self.activation)
 
-    def predict(self, x):
+    def predict(self, x, display=True):
         p_input = np.append(x, 1)  # add bias node
         neuron_val = np.dot(p_input, self.weights.T)
-        p_output = self.activation(neuron_val)
-        prediction = round(p_output[0])
-        error = abs(prediction - p_output)
-        return p_output[0], prediction, error[0]
+        p_output = self.activation(neuron_val)[0]
+        prediction = round(p_output)
+        confidence = max(abs(prediction - p_output), 1 - abs(prediction - p_output))
+
+        if display:
+            print("INPUT \n {}".format(x))
+            print("PREDICTION \t CONFIDENCE \n {} \t\t {}".format(prediction, confidence))
+
+        return p_output, prediction, confidence

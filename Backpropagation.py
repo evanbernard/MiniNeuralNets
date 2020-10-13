@@ -27,7 +27,7 @@ def backpropagation(x, y, num_iterations=1000, activation=sigmoid):
             outputs = np.append(outputs, y_hat)
             neuron_vals = np.append(neuron_vals, neuron_val)
 
-        t_errors = (y.T - outputs) * activation(neuron_vals, deriv=True)
+        t_errors = (y - outputs) * activation(neuron_vals, deriv=True)
 
         if iteration == num_iterations - 1:
             accuracy = 1 - np.mean(abs(t_errors))

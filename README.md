@@ -19,12 +19,11 @@ training_outputs = np.array([0, 0, 0, 1, 1, 1])
 ```
 After training the model, we want to test it on a pattern it has not seen before, so we will use the following pattern
 ```python
-input_vals = [0, 1, 1, 0]
+input_vals = np.array([0, 1, 1, 0])
 ```
 Now we can train the model on `training_inputs` and have it predict the new pattern:
 ```python
 weights = train(training_inputs, training_outputs, num_iterations=10000)
-input_vals = np.array([0, 1, 1, 0])
 _, prediction, error = predict(weights, input_vals)
 ```
 The resulting output is as follows:

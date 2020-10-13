@@ -22,7 +22,7 @@ def backpropagation(x, y, num_iterations=1000, activation=sigmoid):
 
         for i in range(len(t_inputs)):
             input_layer = t_inputs[i]
-            neuron_val = np.dot(input_layer, weights.T)
+            neuron_val = np.dot(weights, input_layer)
             y_hat = activation(neuron_val)
             outputs = np.append(outputs, y_hat)
             neuron_vals = np.append(neuron_vals, neuron_val)

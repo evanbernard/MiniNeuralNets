@@ -1,38 +1,35 @@
 # MiniNeuralNets
 A collection of mini neural networks written from scratch in python
 
-
-## Backpropagation.py
-This neural network uses backpropagation to adjust the weights of the perceptron. The perceptron has the standard structure, with any number of inputs, and only one neuron, acting as the output. The idea behind backpropagation is to significantly adjust the weights when the error is large, and adjust the weights less when the error is small. This can be done by setting the adjustment to be the matrix of inputs multiplied by the vector of errors. The vector of errors is calculated element-wise by multiplying the difference between the output and the actual answer by the derivative of the sigmoid function (our activation function). The result is the adjustment vector, where the ith element is the amount that the ith node's weight should change, and so we complete the backpropegation by adding the adjustment vector to the weights, and doing it over again, now with slightly more accurate weights.
+## main.py
+This script acts as the controller for the mini neural networks. You're able to instantiate a perceptron with
 ```python
-training_inputs = np.array([[1, 1, 0, 0],
-                            [0, 0, 1, 0],
-                            [1, 0, 1, 0],
-                            [0, 0, 0, 1],
-                            [1, 0, 1, 1],
-                            [0, 1, 1, 1]])
+nn = Perceptron(activation=sigmoid)
 ```
-Each row in `training_inputs` is a question, where the answer for each row is obtained by taking the last element in the list.
+This will store a perceptron in nn, which contains the weights, activation function and accuracy for the model. To train the model, you call `nn.train` passing the training inputs `x` and training labels `y`, along with the number of iterations and the training algorithm you'd like to use. We will train the model using backpropagation and sigmoid to predict the output of the following pattern:
 ```python
-# answers to the input patterns
-training_outputs = np.array([0, 0, 0, 1, 1, 1])
+x = np.array([[1, 1, 0, 0],
+              [0, 0, 1, 0],
+              [1, 0, 1, 0],
+              [0, 0, 0, 1],
+              [1, 0, 1, 1],
+              [0, 1, 1, 1]])
+y = np.array([0, 0, 0, 1, 1, 1])
+nn.train(x, y, iterations=10000, train_func=backpropagation)
 ```
-After training the model, we want to test it on a pattern it has not seen before, so we will use the following pattern
+Notice the output is simply the last element in the input, it's difficult for a perceptron to find more complex patterns, after all, it's only one node. Now you have a trained perceptron, you can make predictions with it using `nn.predict(x)`, for some input `x`. The method returns the pre-activation output, the prediction (rounded activation function on the output), as well as the confidence of the choice repsectively.
 ```python
 input_vals = np.array([0, 1, 1, 0])
+output, prediction, condidence = nn.predict(input_vals)
 ```
-Now we can train the model on `training_inputs` and have it predict the new pattern:
 ```python
-weights = train(training_inputs, training_outputs, num_iterations=10000)
-_, prediction, error = predict(weights, input_vals)
-```
-The resulting output is as follows:
-```python
-ACCURACY: 
- 0.9999577269693771
+# OUTPUT
 INPUT 
- [0, 1, 1, 0]
-PREDICTION 		 ERROR 
- 0.0 			 2.731818946727216e-05
+ [0 1 1 0]
+PREDICTION 	 CONFIDENCE 
+ 0.0 		 0.9945485299594722
 ```
-So, using backpropagation, we've adjusted the weights of a single-neuron neural network in order to accurately predict the answers to the simple pattern question.
+As you can see, we've successfully trained our perceptron to model the pattern given, and it was able to predict the result of an input it's never seen before, with a confidence of 99.4%.
+
+## Backpropagation.py
+Backpropagation is a method of adjusting the weights in the neural network using gradient descent. The idea behind this algorithm is to significantly adjust the weights when the error is large, and make smaller adjustments the weights when the error is small. This can be done by setting the adjustment values to be the matrix of inputs multiplied by the vector of errors. The vector of errors is calculated element-wise by multiplying the difference between the output and the actual answer by the derivative of the activation function of our choosing. The result is the adjustment vector, where the ith element is the amount that the ith node's weight should change, and so we complete the backpropagation by adding the adjustment vector to the weights, which leaves us with slightly more accurate weights.

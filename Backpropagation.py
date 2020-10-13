@@ -51,12 +51,12 @@ def train(t_inputs, t_outputs, num_iterations=1000):
 #   prediction as output
 def predict(p_weights, p_input):
     # add a 1 to the end of the inputs for the bias node
-    p_input.append(1)
+    p_input = np.append(p_input, 1)
     neuron_val = np.dot(p_input, p_weights.T)
     p_output = sigmoid(neuron_val)
     prediction = round(p_output[0])
     error = (prediction - p_output) ** 2
-    return p_output[0], prediction, error
+    return p_output[0], prediction, error[0]
 
 
 if __name__ == "__main__":
@@ -69,6 +69,8 @@ if __name__ == "__main__":
     training_outputs = np.array([0, 0, 0, 1, 1, 1])
 
     weights = train(training_inputs, training_outputs, num_iterations=10000)
-    input_ar = [0, 1, 1, 0]
-    _, prediction, error = predict(weights, input_ar)
-    print(prediction)
+
+    input_vals = np.array([0, 0, 0, 0])
+    _, prediction, error = predict(weights, input_vals)
+    print("INPUT \n {}".format(input_vals))
+    print("PREDICTION \t\t ERROR \n {} \t\t\t {}".format(prediction, error))

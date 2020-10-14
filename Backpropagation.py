@@ -20,7 +20,7 @@ def backpropagation(x, y, iterations=1000, activation=sigmoid, error_func=differ
     """
     num_inputs = len(x[0])
     accuracy = 0
-    # we are adding a bias by creating a new node (val=1) in the previous layer and treating it as an input, so append
+    # we are adding a bias by creating a new node (val=1) in the input layer and treating it as an input, so append
     #   1 to the end of each row in the inputs. Doing it this way is easier since we can adjust the weight of the
     #   bias along with the rest of the nodes in the previous layer
     temp = []
@@ -48,7 +48,9 @@ def backpropagation(x, y, iterations=1000, activation=sigmoid, error_func=differ
         if iteration == iterations - 1:
             accuracy = 1 - np.mean(abs(t_errors))
 
-        # the magnitude of an adjustment is directly proportional to the error
+        # the magnitude of an adjustment is directly proportional to the error, we dot product errors with the input
+        #   in order to remove the affect the error from an input of 0 has. When the input is 0, that input does not
+        #   affect the value of the node, so it's error is irrelevant. See the readme on github for more detail
         adjustments = np.dot(t_errors, x)
 
         weights = weights + adjustments

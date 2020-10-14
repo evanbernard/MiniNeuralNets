@@ -4,16 +4,23 @@ import random
 from operator import itemgetter
 
 
-def genetic_algorithm(x, y, generations=1000, num_agents=100, activation=sigmoid):
-    """ The genetic algorithm tries to mimic evolution by trying many different weights, ranking them, and allowing
-        the highest-ranking weights to reproduce and have their 'genes' make it to the next generation.
-
-    :param x: numpy array representing the training data, a matrix of inputs where each row is one trial
-    :param y: numpy array, the labels for the training data
-    :param generations: int, the number of generations to run
-    :param activation: function, the activation function to be applied on the node
-    :param num_agents: int, the number of weights in a generation
-    :return: the weights and accuracy of the trained model, as a numpy array and float respectively
+def genetic_algorithm(x, y, generations=100, num_agents=100, activation=relu, error_func=mse):
+    """
+    SUMMARY
+        The genetic algorithm tries to mimic evolution by testing many different weights, ranking them, and making the
+        weights that scored higher more likely to reproduce, where a variant of their 'genes' (weights) will be passed
+        down to the next generation. After each generation, the set of weights (agents) is likely going to be slightly
+        better than the previous agents, thus resulting in an improvement in accuracy over time.
+    PARAMETERS
+        x: a numpy array, one row for each trial (set of inputs)
+        y: a numpy array, labels for the inputs x. one label per trial
+        generations: integer, the number of generations to run, where once per generation the agents reproduce
+        num_agents: int, the number of agents in a generation (one agent is one set of weights for the model)
+        activation: function, the type of activation function to be used. (relu is the best for this model)
+        error_func: function, the type of function to calculate the error. (mse is the best for this model)
+    RETURN
+        The function returns two elements, the numpy array of best weights found, as well as the accuracy of the
+        weights, in that order.
     """
 
     def generate_agents(n):
@@ -27,14 +34,14 @@ def genetic_algorithm(x, y, generations=1000, num_agents=100, activation=sigmoid
     def calculate_fitness(current_low):
         loe = np.empty((0, num_inputs + 1)),
         for weights in current_low:
-            outputs = np.array([])
+            y_hats = np.array([])
             for i in range(len(x)):
                 input_layer = x[i]
                 neuron_val = np.dot(weights, input_layer)
                 y_hat = activation(neuron_val)
-                outputs = np.append(outputs, y_hat)
+                y_hats = np.append(y_hats, y_hat)
             # uses mean squared error, the error is the error of the entire trial
-            er = np.sum((y - outputs)**2)/len(outputs)
+            er = error_func(y, y_hats)
             loe = np.append(loe, er)
         # sorts the list of weights in increasing order indexed by the error. the first element in sorted_low is
         # the best fitting model, and the last element is the worst fitting model

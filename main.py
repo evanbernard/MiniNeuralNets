@@ -1,20 +1,24 @@
 from Backpropagation import backpropagation
+from GeneticAlgorithm import genetic_algorithm
 from Perceptron import *
 
 
 if __name__ == "__main__":
-    training_inputs = np.array([[1, 1, 0, 0],
-                                [0, 0, 1, 0],
-                                [1, 0, 1, 0],
-                                [0, 0, 0, 1],
-                                [1, 0, 1, 1],
-                                [0, 1, 1, 1]])
+    x = np.array([[1, 1, 0, 0],
+                  [0, 0, 1, 0],
+                  [1, 0, 1, 0],
+                  [0, 0, 0, 1],
+                  [1, 0, 1, 1],
+                  [0, 1, 1, 1]])
 
-    training_outputs = np.array([0, 0, 0, 1, 1, 1])
+    y = np.array([0, 0, 0, 1, 1, 1])
 
-    nn = Perceptron(activation=sigmoid)
-    nn.train(training_inputs, training_outputs, iterations=10000, train_func=backpropagation)
+    ga = Perceptron(activation=relu, error=mse)
+    ga.train(genetic_algorithm, x, y, 100, 50)
+
+    bp = Perceptron(activation=sigmoid, error=difference)
+    bp.train(backpropagation, x, y, 100)
 
     input_vals = np.array([0, 1, 1, 0])
-
-    nn.predict(input_vals)
+    bp.predict(input_vals)
+    ga.predict(input_vals)

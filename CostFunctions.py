@@ -1,5 +1,4 @@
 import numpy as np
-import math
 
 
 def sigmoid(x, deriv=False):
@@ -20,9 +19,9 @@ def relu(x):
     return max(0, x)
 
 
+def nothing(x):
+    return x
+
+
 def mse(y, y_hats):
     return np.sum((y - y_hats) ** 2) / len(y_hats)
-
-
-def difference(y, y_hats):
-    return y - y_hats

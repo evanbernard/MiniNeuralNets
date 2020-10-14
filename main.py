@@ -13,12 +13,17 @@ if __name__ == "__main__":
 
     y = np.array([0, 0, 0, 1, 1, 1])
 
-    ga = Perceptron(activation=relu, error=mse)
-    ga.train(genetic_algorithm, x, y, 100, 50)
+    x1 = np.array([[-10],
+                   [0],
+                   [10]])
+    y1 = np.array([-9, 1, 11])
 
-    bp = Perceptron(activation=sigmoid, error=difference)
-    bp.train(backpropagation, x, y, 100)
+    ga = Perceptron(activation=nothing, error=mse)
+    ga.train(genetic_algorithm, x1, y1, 1000, 100)
 
-    input_vals = np.array([0, 1, 1, 0])
-    bp.predict(input_vals)
-    ga.predict(input_vals)
+    bp = Perceptron(activation=sigmoid, error=mse)
+    bp.train(backpropagation, x, y, 10000)
+
+    _input = np.array([100])
+    ga.predict(_input)
+    print(ga.weights)

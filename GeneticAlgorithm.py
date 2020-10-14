@@ -51,7 +51,7 @@ def genetic_algorithm(x, y, generations=100, num_agents=100, activation=relu, er
         return sorted_w, sorted_e
 
     def selection(weights, errors):
-        num_reproduced = math.ceil(len(weights)*3/4)  # we want three fourths of the population to reproduce
+        num_reproduced = math.ceil(len(weights)*3/4)  # we want one fourth of the population to be random - arbitrary
         num_new = num_agents - num_reproduced  # the rest of the agents will be generated randomly
 
         # we want low error to have a large probability, so divide errors by 1
@@ -78,7 +78,15 @@ def genetic_algorithm(x, y, generations=100, num_agents=100, activation=relu, er
             parent2 = random.choice(weights)
             child = np.array([])
             for index in range(len(parent1)):
-                child = np.append(child, (parent1[index] + parent2[index])/2)
+                rnd = np.random.rand(1)
+                if rnd > 0.5:
+                    child_weight = parent1[index]
+                else:
+                    child_weight = parent2[index]
+                if rnd < 0.1:
+                    # simulate a 10% dropout in dna while simultaneously providing random mutations
+                    child_weight = 0
+                child = np.append(child, child_weight)
             new_weights.append(child)
 
         new_weights = np.array(new_weights)

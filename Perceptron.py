@@ -27,7 +27,10 @@ class Perceptron:
     def predict(self, x, display=True):
         p_input = np.append(x, 1)  # add bias node
         neuron_val = np.dot(p_input, self.weights.T)
-        p_output = self.activation(neuron_val)[0]
+        p_output = self.activation(neuron_val)
+        # depending on the activation function the output may be a numpy array, so force it to be a value
+        if type(p_output) is np.ndarray:
+            p_output = p_output[0]
         prediction = round(p_output)
         confidence = max(abs(prediction - p_output), 1 - abs(prediction - p_output))
 

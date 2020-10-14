@@ -15,13 +15,14 @@ from CostFunctions import *
 
 class Perceptron:
 
-    def __init__(self, weights=np.array([]), activation=sigmoid):
+    def __init__(self, weights=np.array([]), activation=sigmoid, error=mse):
         self.weights = weights
         self.accuracy = 0
         self.activation = activation
+        self.error = error
 
-    def train(self, x, y, iterations, train_func):
-        self.weights, self.accuracy = train_func(x, y, iterations, self.activation)
+    def train(self, train_func, *args):
+        self.weights, self.accuracy = train_func(*args, self.activation, self.error)
 
     def predict(self, x, display=True):
         p_input = np.append(x, 1)  # add bias node

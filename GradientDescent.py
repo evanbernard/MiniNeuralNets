@@ -19,8 +19,8 @@ def gradient_descent(x, y, iterations=1000, learning_rate=0.05, activation=sigmo
         The function returns two elements, the numpy array of best weights found, as well as the error of the
         weights, in that order.
     NOTE
-        The activation function cannot be linear (ReLU, etc.) because the derivative would then be constant, and we
-        wouldn't be able to determine the direction of the adjustment.
+        The activation function and error functions should be differentiable, because the delta values are dependent  
+        on the derivatives of those functions.
     """
     num_inputs = len(x[0])
     er = 1

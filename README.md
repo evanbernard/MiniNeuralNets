@@ -29,6 +29,7 @@ x = np.array([[1, 1, 0, 0],
 y = np.array([0, 0, 1, 1])
 
 nn = Perceptron(activation=sigmoid, error=mse)
+
 # x are the training inputs, y are training labels, 10000 iterations and a learning rate of 2
 nn.train(gradient_descent, x, y, 10000, 2)
 
@@ -49,6 +50,8 @@ ERROR
 ```
 So, we have trained a perceptron to model the given pattern, and it has produced the correct result with a confidence of 99.47%, on an input it has never seen before. Notice that each weight corresponds to it's respective input, i.e., the first value in the input pattern has a weight of `-1.0797`, the last value in the input pattern has a weight of `10.431`, and the bias has a weight of `-3.976`. From these weights, it's easy to see how the model calculates the result given an input; it essentially ignores the first 3 inputs, making the value of the neuron entirely dependent on the last input value, which is exactly how it is expected to model the pattern.
 
+Note that in this algorithm, we've had to calculate the delta of each weight connected to each node, for each input given in the training data. This is quite a lot of computation. Since this is only a perceptron, the efficiency (or lack thereof) isn't noticeable, but of course the computational requirements of this algorithm will show itself when it's used on more complex neural networks. To combat this, there are optimizing techniques such as Stochastic Gradient Descent (SGD), which compute the deltas for a randomly selected subset of trials in the inputs, thus making gradient descent significantly less computationally demanding, but this comes with the price of a slower time to convergence. These optimization techniques are foregone in this project, because if you understand gradient descent, then it is not difficult to understand SGD, and other optimizations.
+
 ## GeneticAlgorithm.py
 The genetic algorithm tries to mimic evolution, by adjusting the weights of a given model until it's found optimal weights. It's typically used in a unsupervised manner, measuring the performance of the model based on the 'score' it obtains in an environment it's being trained in. However, since this is a learning exercise, we slightly modify the algorithm to be supervised, by calculating the score of the model based on how close the output is to the actual answer. There are 5 main steps to this algorithm:
 
@@ -59,7 +62,7 @@ We find some way to calculate the fitness of each agent. In our case, since we h
 3. **Selection:**
 We choose some number of agents to reproduce, where the higher the agent's fitness, the more likely they are to be selected for reproduction.
 4. **Reproduction:**
-Out of the pool of selected agents, we randomly choose two to reproduce, until we have close to `num_agents` agents (roughly 75%, chosen fairly arbitrarily). The reproduction is the creation of a child, where each weight in the child is chosen to be one of the two parent's weight in that position. We also include a 10% chance for any given weight to be set to 0. This random mutation allows for new patterns to emerge (in case the model gets stuck in a local minimum), and it also simulates the idea of dropout, which again prevents the model from being stuck in a local minimum, and allows it to explore more possibilities.
+Out of the pool of selected agents, we randomly choose two to reproduce, until we have close to `num_agents` agents (roughly 75%, chosen fairly arbitrarily). The reproduction is the creation of a child, where each weight in the child is chosen to be one of the two parent's weight in that position. We also include a 10% chance for any given weight to be set to a random value. This random mutation allows for new patterns to emerge in case the model gets stuck in a local minimum.
 5. **Create New Generation:**
 When we have a number of children that are close to the number of agents we started with (75%, see step 4), we fill the rest of the generation with randomized weights, again to allow new patterns to emerge.
 
@@ -72,6 +75,7 @@ x = np.array([[0],
 y = np.array([1, 2, 3])
 
 nn = Perceptron(activation=relu, error=mae)
+
 # we will simulate 1000 generations, with each having 100 agents, and return the model early if the error is <= 0.002
 nn.train(genetic_algorithm, x, y, 1000, 100, 0.002)
 

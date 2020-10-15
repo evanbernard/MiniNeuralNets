@@ -1,4 +1,4 @@
-from CostFunctions import *
+from CommonFunctions import *
 
 # The structure of this neural net is as follows, where I represents an input node, N a neuron, B a bias and O
 # the output. Notice that the bias is treated simply as a node in the previous layer. The bias is extremely important
@@ -17,12 +17,12 @@ class Perceptron:
 
     def __init__(self, weights=np.array([]), activation=sigmoid, error=mse):
         self.weights = weights
-        self.accuracy = 0
+        self.er = 1
         self.activation = activation
         self.error = error
 
     def train(self, train_func, *args):
-        self.weights, self.accuracy = train_func(*args, self.activation, self.error)
+        self.weights, self.er = train_func(*args, self.activation, self.error)
 
     def predict(self, x, display=True):
         p_input = np.append(x, 1)  # add bias node
@@ -38,4 +38,6 @@ class Perceptron:
             print("INPUT \n {}".format(x))
             print("PREDICTION \t CONFIDENCE \n {} \t\t {}".format(prediction, confidence))
             print("WEIGHTS \n {}".format(self.weights))
+            print("ERROR \n {}".format(self.er))
+
         return p_output, prediction, confidence

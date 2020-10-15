@@ -75,7 +75,7 @@ nn = Perceptron(activation=relu, error=mae)
 # we will simulate 1000 generations, with each having 100 agents, and return the model early if the error is <= 0.002
 nn.train(genetic_algorithm, x, y, 1000, 100, 0.002)
 
-input_vals = np.array([10])
+input_vals = np.array([100])
 nn.predict(input_vals)
 ```
 Clearly the pattern returns `x+1`, given some `x`, and notice we have chosen to use the `ReLU` activation function. This function takes in some `x` and simply returns the maximum of `x` and `0`. Since we want our output to be an unbouded integer, we are restricted from using activation functions such as `sigmoid` or `tanh`, which is why we choose `ReLU`. Also notice that since `ReLU` returns `max(0,x)`, we aren't able to train the model to predict negative numbers. The output is as follows:

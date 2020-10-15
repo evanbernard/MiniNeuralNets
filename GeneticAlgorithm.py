@@ -1,10 +1,10 @@
-from CostFunctions import *
+from CommonFunctions import *
 import math
 import random
 from operator import itemgetter
 
 
-def genetic_algorithm(x, y, generations=100, num_agents=100, activation=relu, error_func=mse):
+def genetic_algorithm(x, y, generations=100, num_agents=100, stop_error=0.001, activation=relu, error_func=mse):
     """
     SUMMARY
         The genetic algorithm tries to mimic evolution by testing many different weights, ranking them, and making the
@@ -16,8 +16,11 @@ def genetic_algorithm(x, y, generations=100, num_agents=100, activation=relu, er
         y: a numpy array, labels for the inputs x. one label per trial
         generations: integer, the number of generations to run, where once per generation the agents reproduce
         num_agents: int, the number of agents in a generation (one agent is one set of weights for the model)
-        activation: function, the type of activation function to be used. (relu is the best for this model)
-        error_func: function, the type of function to calculate the error. (mse is the best for this model)
+        stop_error: float, if the error of the model is under or equal to this value, the model will be returned as it
+            is. It's very useful for the genetic algorithm due to the randomized nature of the algorithm; it's possible
+            to find a well fitting model, but the random mutations alter the model before the accurate model is returned
+        activation: function, the type of activation function to be used. (relu performs well with this model)
+        error_func: function, the type of function to calculate the error. (mae performs well with this model)
     RETURN
         The function returns two elements, the numpy array of best weights found, as well as the accuracy of the
         weights, in that order.
@@ -37,30 +40,34 @@ def genetic_algorithm(x, y, generations=100, num_agents=100, activation=relu, er
             weights = np.append(weights, new_weight, axis=0)
         return weights
 
-    def calculate_fitness(current_low):
+    def calculate_fitness(current_gen):
         loe = np.empty((0, num_inputs + 1)),
-        for weights in current_low:
+        for weights in current_gen:
             y_hats = np.array([])
             for i in range(len(x)):
                 input_layer = x[i]
                 neuron_val = np.dot(weights, input_layer)
                 y_hat = activation(neuron_val)
                 y_hats = np.append(y_hats, y_hat)
-            # uses mean squared error, the error is the error of the entire trial
+            # the error of the agent
             er = error_func(y, y_hats)
+            if er <= stop_error:
+                print("EARLY STOP")
+                return weights, er, True
+
             loe = np.append(loe, er)
         # sorts the list of weights in increasing order indexed by the error. the first element in sorted_low is
         # the best fitting model, and the last element is the worst fitting model
-        sorted_tuples = sorted(tuple(zip(loe, current_low)), key=itemgetter(0))
+        sorted_tuples = sorted(tuple(zip(loe, current_gen)), key=itemgetter(0))
         sorted_e = np.array([w[0] for w in sorted_tuples])
         sorted_w = np.array([w[1] for w in sorted_tuples])
-        return sorted_w, sorted_e
+        return sorted_w, sorted_e, False
 
     def selection(weights, errors):
-        num_reproduced = math.ceil(len(weights)*3/4)  # we want one fourth of the population to be random - arbitrary
+        num_reproduced = math.ceil(len(weights)*3/4)  # we want one fourth of the population to be random, arbitrary %
         num_new = num_agents - num_reproduced  # the rest of the agents will be generated randomly
 
-        # we want low error to have a large probability, so divide errors by 1
+        # we want low errors to have a large probability of being selected, so divide errors by 1
         error_sum = np.sum(np.divide(1, errors))
         count = 0
         probabilities = []
@@ -90,8 +97,8 @@ def genetic_algorithm(x, y, generations=100, num_agents=100, activation=relu, er
                 else:
                     child_weight = parent2[index]
                 if rnd < 0.1:
-                    # simulate a 10% dropout in dna while simultaneously providing random mutations
-                    child_weight = 0
+                    # simulate 10% random mutations
+                    child_weight = np.random.rand(1) * 2 - 1
                 child = np.append(child, child_weight)
             new_weights.append(child)
 
@@ -109,8 +116,10 @@ def genetic_algorithm(x, y, generations=100, num_agents=100, activation=relu, er
     low = generate_agents(num_agents)
 
     for generation in range(generations):
-        sorted_weights, sorted_errors = calculate_fitness(low)
+        sorted_weights, sorted_errors, early_quit = calculate_fitness(low)
+        if early_quit:
+            return sorted_weights, sorted_errors
         low = selection(sorted_weights, sorted_errors)
 
-    best_weight, error = calculate_fitness(low)
+    best_weight, error, _ = calculate_fitness(low)
     return best_weight[0], error[0]

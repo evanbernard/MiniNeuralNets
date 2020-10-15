@@ -3,7 +3,7 @@ import numpy as np
 
 def sigmoid(x, deriv=False):
     if deriv:
-        return np.exp(-x) * sigmoid(x) * sigmoid(x)
+        return sigmoid(x) * (1 - sigmoid(x))
     else:
         return 1 / (np.exp(-x) + 1)
 
@@ -15,7 +15,12 @@ def tanh(x, deriv=False):
         return (np.exp(x) - np.exp(-x)) / (np.exp(x) + np.exp(-x))
 
 
-def relu(x):
+def relu(x, deriv=False):
+    if deriv:
+        if x > 0:
+            return 1
+        else:
+            return 0
     return max(0, x)
 
 

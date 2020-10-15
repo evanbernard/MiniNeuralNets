@@ -21,6 +21,12 @@ def genetic_algorithm(x, y, generations=100, num_agents=100, activation=relu, er
     RETURN
         The function returns two elements, the numpy array of best weights found, as well as the accuracy of the
         weights, in that order.
+    NOTE
+        This algorithm is almost always used for unsupervised training, i.e. in situations where the actual result
+        you want your model to predict is unknown. This algorithm is common when training an agent to play a video game,
+        since you aren't able to know what move is the optimal move. However, since this is a learning exercise, we
+        will use the algorithm in a supervised way, by calculating the 'fitness' of the model directly, using the error
+        of the prediction.
     """
 
     def generate_agents(n):

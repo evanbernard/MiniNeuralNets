@@ -1,7 +1,7 @@
-from CostFunctions import *
+from CommonFunctions import *
 
 
-def backpropagation(x, y, iterations=1000, learning_rate=0.05, activation=sigmoid, error_func=mse):
+def gradient_descent(x, y, iterations=1000, learning_rate=0.05, activation=sigmoid, error_func=mse):
     """
     SUMMARY
         The function's purpose is to generate weights that are most likely to generate a label in y, given a row of
@@ -16,15 +16,14 @@ def backpropagation(x, y, iterations=1000, learning_rate=0.05, activation=sigmoi
         error_func: function, the type of error function to be used. However, this parameter does nothing here, as
             explained in the note below
     RETURN
-        The function returns two elements, the numpy array of best weights found, as well as the accuracy of the
+        The function returns two elements, the numpy array of best weights found, as well as the error of the
         weights, in that order.
     NOTE
-        There is no choice for the error function, as backpropagation is derived using the mean square error function,
-        so the error function is ignored here.
+        The activation function cannot be linear (ReLU, etc.) because the derivative would then be constant, and we
+        wouldn't be able to determine the direction of the adjustment.
     """
-    _ = error_func
     num_inputs = len(x[0])
-    accuracy = 0
+    er = 1
     # we are adding a bias by creating a new node (val=1) in the input layer and treating it as an input, so append
     #   1 to the end of each row in the inputs. Doing it this way is easier since we can adjust the weight of the
     #   bias along with the rest of the nodes in the previous layer
@@ -43,16 +42,21 @@ def backpropagation(x, y, iterations=1000, learning_rate=0.05, activation=sigmoi
             input_layer = x[i]
             neuron_val = np.dot(weights, input_layer)
             y_hat = activation(neuron_val)
-            delta = learning_rate * activation(neuron_val, deriv=True) * (y[i] - y_hat)
+            delta = learning_rate * activation(neuron_val, deriv=True) * error_func(y[i], [y_hat], deriv=True)
             deltas = np.append(deltas, delta)
 
+        # calculate error on the last iteration
         if iteration == iterations - 1:
-            accuracy = 1 - np.mean(abs(deltas))
+            y_hats = np.array([])
+            for i in range(len(x)):
+                # same calculation as above, just written on one line
+                y_hats = np.append(y_hats, activation(np.dot(weights, x[i])))
+            er = error_func(y, y_hats)
 
         # the magnitude of an adjustment is directly proportional to the deltas, we dot product deltas with the input
         #   in order to remove the affect the delta from an input of 0 has. When the input is 0, that input does not
-        #   affect the value of the node, so it's delta is irrelevant. See the readme on github for more detail
+        #   affect the value of the node, so it's delta is irrelevant
         adjustments = np.dot(deltas, x)
 
-        weights = weights + adjustments
-    return weights, accuracy
+        weights = weights - adjustments
+    return weights, er

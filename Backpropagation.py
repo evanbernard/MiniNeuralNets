@@ -1,7 +1,7 @@
 from CostFunctions import *
 
 
-def backpropagation(x, y, iterations=1000, activation=sigmoid, error_func=mse):
+def backpropagation(x, y, iterations=1000, learning_rate=0.05, activation=sigmoid, error_func=mse):
     """
     SUMMARY
         The function's purpose is to generate weights that are most likely to generate a label in y, given a row of
@@ -38,22 +38,20 @@ def backpropagation(x, y, iterations=1000, activation=sigmoid, error_func=mse):
 
     # In each iteration, we run the model on every testing input and output, and adjust the weights once
     for iteration in range(iterations):
-        y_hats = np.array([])
-        neuron_vals = np.array([])
+        deltas = np.array([])
         for i in range(len(x)):
             input_layer = x[i]
             neuron_val = np.dot(weights, input_layer)
             y_hat = activation(neuron_val)
-            y_hats = np.append(y_hats, y_hat)
-            neuron_vals = np.append(neuron_vals, neuron_val)
+            delta = learning_rate * activation(neuron_val, deriv=True) * (y[i] - y_hat)
+            deltas = np.append(deltas, delta)
 
-        deltas = activation(neuron_vals, deriv=True) * (y - y_hats)
         if iteration == iterations - 1:
             accuracy = 1 - np.mean(abs(deltas))
 
-        # the magnitude of an adjustment is directly proportional to the error, we dot product errors with the input
-        #   in order to remove the affect the error from an input of 0 has. When the input is 0, that input does not
-        #   affect the value of the node, so it's error is irrelevant. See the readme on github for more detail
+        # the magnitude of an adjustment is directly proportional to the deltas, we dot product deltas with the input
+        #   in order to remove the affect the delta from an input of 0 has. When the input is 0, that input does not
+        #   affect the value of the node, so it's delta is irrelevant. See the readme on github for more detail
         adjustments = np.dot(deltas, x)
 
         weights = weights + adjustments

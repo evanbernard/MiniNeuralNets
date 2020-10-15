@@ -37,5 +37,5 @@ class Perceptron:
         if display:
             print("INPUT \n {}".format(x))
             print("PREDICTION \t CONFIDENCE \n {} \t\t {}".format(prediction, confidence))
-            print("NEURON VAL \n {}".format(neuron_val))
+            print("WEIGHTS \n {}".format(self.weights))
         return p_output, prediction, confidence

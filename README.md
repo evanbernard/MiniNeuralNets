@@ -6,7 +6,7 @@ This script acts as the controller for the mini neural networks. You're able to 
 ```python
 nn = Perceptron(activation=sigmoid, error=mse)
 ```
-This will store a perceptron in nn, which contains the weights, activation function, error function and accuracy for the model. To train the model, you call `nn.train`, passing the training algorithm of your choice, along with the arguments needed for your chosen training algorithm. As an example, to train a model using gradient descent on inputs `x`, answers `y`, with 1000 iterations, you pass the following parameters:
+This will store a perceptron in nn, which contains the weights, activation function, error function and accuracy for the model. To train the model, you call `nn.train`, passing the training algorithm of your choice, along with the arguments needed for your chosen training algorithm. As an example, to train a model using gradient descent on inputs `x`, labels `y`, with 1000 epochs, you pass the following parameters:
 ```python
 nn.train(gradient_descent, x, y, 1000)
 ```
@@ -28,10 +28,10 @@ x = np.array([[1, 1, 0, 0],
 
 y = np.array([0, 0, 1, 1])
 
-nn = Perceptron(activation=sigmoid, error=mse)
+nn = Perceptron(activation=sigmoid, error=mae)
 
-# x are the training inputs, y are training labels, 10000 iterations and a learning rate of 2
-nn.train(gradient_descent, x, y, 10000, 2)
+# x are the training inputs, y are training labels, 1000 epochs and a learning rate of 2
+nn.train(gradient_descent, x, y, 1000, 2)
 
 input_vals = np.array([0,1,1,0])
 nn.predict(input_vals)
@@ -42,13 +42,13 @@ Notice the output is simply the last element in the input. It's difficult for a 
 INPUT 
  [0 1 1 0]
 PREDICTION 	 CONFIDENCE 
- 0.0 		 0.9946591601887982
+ 0.0 		 0.9994440556887279
 WEIGHTS 
- [-1.07974768 -0.14963171 -1.10147694 10.43115913 -3.97590856]
+ [-2.04856202 -0.30293383 -2.09234935 14.94249445 -5.09900315]
 ERROR 
- 2.9821391002328183e-05
+ 0.0005817777337816566
 ```
-So, we have trained a perceptron to model the given pattern, and it has produced the correct result with a confidence of 99.47%, on an input it has never seen before. Notice that each weight corresponds to it's respective input, i.e., the first value in the input pattern has a weight of `-1.0797`, the last value in the input pattern has a weight of `10.431`, and the bias has a weight of `-3.976`. From these weights, it's easy to see how the model calculates the result given an input; it essentially ignores the first 3 inputs, making the value of the neuron entirely dependent on the last input value, which is exactly how it is expected to model the pattern.
+So, we have trained a perceptron to model the given pattern, and it has produced the correct result with a confidence of 99.94%, on an input it has never seen before. Notice that each weight corresponds to it's respective input, i.e., the first value in the input pattern has a weight of `-2.0486`, the last value in the input pattern has a weight of `14.942`, and the bias has a weight of `-5.099`. From these weights, it's easy to see how the model calculates the result given an input; it essentially ignores the first 3 inputs, making the value of the neuron entirely dependent on the last input value, which is exactly how it is expected to model the pattern.
 
 Note that in this algorithm, we've had to calculate the delta of each weight connected to each node, for each input given in the training data. This is quite a lot of computation. Since this is only a perceptron, the efficiency (or lack thereof) isn't noticeable, but of course the computational requirements of this algorithm will show itself when it's used on more complex neural networks. To combat this, there are optimizing techniques such as Stochastic Gradient Descent (SGD), which compute the deltas for a randomly selected subset of trials in the inputs, thus making gradient descent significantly less computationally demanding, but this comes with the price of a slower time to convergence. These optimization techniques are foregone in this project, because if you understand gradient descent, then it is not difficult to understand SGD, and other optimizations.
 

@@ -1,5 +1,5 @@
-from GradientDescent import gradient_descent
-from GeneticAlgorithm import genetic_algorithm
+from TrainingAlgorithms.GeneticAlgorithm import genetic_algorithm
+from TrainingAlgorithms.GradientDescent import gradient_descent
 from Perceptron import *
 
 

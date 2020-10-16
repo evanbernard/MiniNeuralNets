@@ -22,7 +22,7 @@ def genetic_algorithm(x, y, generations=100, num_agents=100, stop_error=0.001, a
         activation: function, the type of activation function to be used. (relu performs well with this model)
         error_func: function, the type of function to calculate the error. (mae performs well with this model)
     RETURN
-        The function returns two elements, the numpy array of best weights found, as well as the accuracy of the
+        The function returns two elements, the numpy array of best weights found, as well as the error of the
         weights, in that order.
     NOTE
         This algorithm is almost always used for unsupervised training, i.e. in situations where the actual result

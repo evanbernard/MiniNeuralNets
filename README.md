@@ -6,9 +6,9 @@ This script acts as the controller for the mini neural networks. You're able to 
 ```python
 nn = Perceptron(activation=sigmoid, error=mse)
 ```
-This will store a perceptron in nn, which contains the weights, activation function, error function and accuracy for the model. To train the model, you call `nn.train`, passing the training algorithm of your choice, along with the arguments needed for your chosen training algorithm. As an example, to train a model using gradient descent on inputs `x`, labels `y`, with 1000 epochs, you pass the following parameters:
+This will store a perceptron in nn, which contains the weights, activation function, error function and accuracy for the model. To train the model, you call `nn.train`, passing the training algorithm of your choice, along with the arguments needed for your chosen training algorithm. As an example, to train a model using stochastic gradient descent on inputs `x`, labels `y`, with 1000 epochs and a learning rate of 0.001, you pass the following parameters:
 ```python
-nn.train(gradient_descent, x, y, 1000)
+nn.train(sgd, x, y, 1000, 0.001)
 ```
 Then, to make a prediction of some input `input` using the trained model, you call
 ```python
@@ -16,8 +16,10 @@ output, prediction, confidence = nn.predict(input)
 ```
 where `output` is the actual output of the model, `prediction` is the rounded `output`, and `confidence` is the confidence the model has for it's prediction.
 
-## GradientDescent.py
-The gradient descent algorithm is a method of adjusting the weights of the model in an attempt to minimize the error function, and does so using the gradient of the error function, which is calculated by backpropagation. Backpropagation and gradient descent are often used interchangably, however, gradient descent is the actual training algorithm, while backpropagation is a generalization of the computation of the gradient. The idea of the algorithm is to adjust the weights significantly when the error is large, and to make progressively smaller adjustments the closer the error is to 0. The 'gradient' in 'gradient descent' comes from the algorithms use of the gradient of the error function to determine the direction of the adjustment. For each weight, we need to calculate the delta value, which is found by multiplying the derivative of the activation function of the neuron value by the derivative of the error function. Then, to calculate the adjustment amount for that weight, we multiply the delta value by the input value attached to the weight, and we are left with the amount we need to subtract to the weight in order to slightly improve the accuracy of the model.
+## StochasticGradientDescent.py
+Any gradient descent varient is a method of adjusting the weights of the model in an attempt to minimize the error function, and does so using the gradient of the error function, which is calculated by backpropagation. Backpropagation and gradient descent are often used interchangably, however, gradient descent is the actual training algorithm, while backpropagation is a generalization of the computation of the gradient. The idea of the algorithm is to adjust the weights significantly when the error is large, and to make progressively smaller adjustments the closer the error is to 0. The 'gradient' in 'gradient descent' comes from the algorithms use of the gradient of the error function to determine the direction of the adjustment. For each weight, we need to calculate the delta value, which is found by multiplying the derivative of the activation function of the neuron value by the derivative of the error function. Then, to calculate the adjustment amount for that weight, we multiply the delta value by the input value attached to the weight, and we are left with the amount we need to subtract to the weight in order to slightly improve the accuracy of the model.
+
+There are a few varients of gradient descent, the traditional gradient descent (also known as batch gradient descent) updates the weights after performing the calculations on the entire training dataset. Batch gradient descent isn't used very often, because when you're dealing with large datasets, it takes far too long to make one update. One varient (which is implemented here) is called stochastic gradient descent (SGD), which is exactly like the traditional gradient descent, except the weights are updated as soon as the adjustment is calculated. This allows for a faster time of convergence, and is almost always favoured over the other. Then there comes mini-batch gradient descent, which is essentially a combination of the previous two. Instead of updating the weights after each calculation like SGD does, mini-batch gradient descent separates the database into mini batches (often of size 32), and performs batch gradient descent on each mini-batch. This allows the model to converge faster than batch gradient descent because weights are updated more frequently, and it also allows for a more accurate gradient approximation since the gradient is calculated with more training samples.
 
 We will now train a model using gradient descent and the sigmoid activation function to predict the output of the following pattern, where each row in `x` is a trial, and the desired output of the trial is stored in the corresponding index of `y`
 ```python 
@@ -30,8 +32,8 @@ y = np.array([0, 0, 1, 1])
 
 nn = Perceptron(activation=sigmoid, error=mae)
 
-# x are the training inputs, y are training labels, 1000 epochs and a learning rate of 2
-nn.train(gradient_descent, x, y, 1000, 2)
+# x are the training inputs, y are training labels, 1000 epochs and a learning rate of 1
+nn.train(sgd, x, y, 1000, 1)
 
 input_vals = np.array([0,1,1,0])
 nn.predict(input_vals)
@@ -42,15 +44,15 @@ Notice the output is simply the last element in the input. It's difficult for a 
 INPUT 
  [0 1 1 0]
 PREDICTION 	 CONFIDENCE 
- 0.0 		 0.9994440556887279
+ 0.0 		 0.9988789558989664
 WEIGHTS 
- [-2.04856202 -0.30293383 -2.09234935 14.94249445 -5.09900315]
+ [-1.82548668 -0.30245144 -1.86913931 13.53508116 -4.62078238]
 ERROR 
- 0.0005817777337816566
+ 0.0011747806580496268
 ```
-So, we have trained a perceptron to model the given pattern, and it has produced the correct result with a confidence of 99.94%, on an input it has never seen before. Notice that each weight corresponds to it's respective input, i.e., the first value in the input pattern has a weight of `-2.0486`, the last value in the input pattern has a weight of `14.942`, and the bias has a weight of `-5.099`. From these weights, it's easy to see how the model calculates the result given an input; it essentially ignores the first 3 inputs, making the value of the neuron entirely dependent on the last input value, which is exactly how it is expected to model the pattern.
+So, we have trained a perceptron to model the given pattern, and it has produced the correct result with a confidence of 99.89%, on an input it has never seen before. Notice that each weight corresponds to it's respective input, i.e., the first value in the input pattern has a weight of `-1.825`, the last value in the input pattern has a weight of `13.535`, and the bias has a weight of `-4.621`. From these weights, it's easy to see how the model calculates the result given an input; it essentially ignores the first 3 inputs, making the value of the neuron entirely dependent on the last input value, which is exactly how it is expected to model the pattern.
 
-Note that in this algorithm, we've had to calculate the delta of each weight connected to each node, for each input given in the training data. This is quite a lot of computation. Since this is only a perceptron, the efficiency (or lack thereof) isn't noticeable, but of course the computational requirements of this algorithm will show itself when it's used on more complex neural networks. To combat this, there are optimizing techniques such as Stochastic Gradient Descent (SGD), which compute the deltas for a randomly selected subset of trials in the inputs, thus making gradient descent significantly less computationally demanding, but this comes with the price of a slower time to convergence. These optimization techniques are foregone in this project, because if you understand gradient descent, then it is not difficult to understand SGD, and other optimizations.
+### Cost Functions
 
 ## GeneticAlgorithm.py
 The genetic algorithm tries to mimic evolution, by adjusting the weights of a given model until it's found optimal weights. It's typically used in a unsupervised manner, measuring the performance of the model based on the 'score' it obtains in an environment it's being trained in. However, since this is a learning exercise, we slightly modify the algorithm to be supervised, by calculating the score of the model based on how close the output is to the actual answer. There are 5 main steps to this algorithm:
@@ -76,7 +78,7 @@ y = np.array([1, 2, 3])
 
 nn = Perceptron(activation=relu, error=mae)
 
-# we will simulate 1000 generations, with each having 100 agents, and return the model early if the error is <= 0.002
+# we will simulate 1000 generations, with each having 100 agents, and return the model early if the error is < 0.002
 nn.train(genetic_algorithm, x, y, 1000, 100, 0.002)
 
 input_vals = np.array([100])

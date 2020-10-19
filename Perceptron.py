@@ -22,7 +22,7 @@ class Perceptron:
         self.error = error
 
     def train(self, train_func, *args):
-        self.weights, self.er = train_func(*args, self.activation, self.error)
+        self.weights, self.er = train_func(self.activation, self.error, *args)
 
     def predict(self, x, display=True):
         p_input = np.append(x, 1)  # add bias node

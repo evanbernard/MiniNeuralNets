@@ -22,6 +22,19 @@ def relu(x, deriv=False):
     return max(0, x)
 
 
+def leaky_relu(x, deriv=False, nslope=0.1):
+    if deriv:
+        if x > 0:
+            return 1
+        if x < 0:
+            return nslope
+        # the function derivative is not defined at x=0, but we set it to zero here to allow it to work
+        return 0
+    if x > 0:
+        return x
+    return nslope * x
+
+
 def nothing(x, deriv=False):
     return x
 
@@ -30,8 +43,7 @@ def nothing(x, deriv=False):
 # mean squared error
 def mse(y, y_hats, deriv=False):
     if deriv:
-        # we don't worry about the constant multiplier of 2, since we multiply by the learning rate
-        return np.sum(y_hats - y)/len(y_hats)
+        return 2 * np.sum(y_hats - y)/len(y_hats)
     return np.sum((y - y_hats) ** 2) / len(y_hats)
 
 

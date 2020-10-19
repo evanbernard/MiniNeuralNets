@@ -4,14 +4,23 @@ import random
 from operator import itemgetter
 
 
-def genetic_algorithm(x, y, generations=100, num_agents=100, stop_error=0.001, activation=relu, error_func=mse):
+def genetic_algorithm(activation, error_func, x, y, generations=100, num_agents=100, stop_error=0.001):
     """
     SUMMARY
         The genetic algorithm tries to mimic evolution by testing many different weights, ranking them, and making the
         weights that scored higher more likely to reproduce, where a variant of their 'genes' (weights) will be passed
         down to the next generation. After each generation, the set of weights (agents) is likely going to be slightly
         better than the previous agents, thus resulting in an improvement in accuracy over time.
-    PARAMETERS
+    PROS
+        The algorithm is (typically) unsupervised, meaning it needs no training labels to improve overtime. The
+        algorithm excels when used on an agent in a video game, since you're able to calculate the fitness of the agent
+        based on how well it performs in the environment it's in. It also is able to get itself out of local minimums
+        fairly easily, thanks to random genetic mutations.
+    CONS
+        The algorithm is very computationally expensive.
+    ARGUMENTS
+        activation: function, the type of activation function to be used. (relu performs well with this model)
+        error_func: function, the type of function to calculate the error. (mae performs well with this model)
         x: a numpy array, one row for each trial (set of inputs)
         y: a numpy array, labels for the inputs x. one label per trial
         generations: integer, the number of generations to run, where once per generation the agents reproduce
@@ -19,8 +28,6 @@ def genetic_algorithm(x, y, generations=100, num_agents=100, stop_error=0.001, a
         stop_error: float, if the error of the model is under or equal to this value, the model will be returned as it
             is. It's very useful for the genetic algorithm due to the randomized nature of the algorithm; it's possible
             to find a well fitting model, but the random mutations alter the model before the accurate model is returned
-        activation: function, the type of activation function to be used. (relu performs well with this model)
-        error_func: function, the type of function to calculate the error. (mae performs well with this model)
     RETURN
         The function returns two elements, the numpy array of best weights found, as well as the error of the
         weights, in that order.
@@ -51,7 +58,7 @@ def genetic_algorithm(x, y, generations=100, num_agents=100, stop_error=0.001, a
                 y_hats = np.append(y_hats, y_hat)
             # the error of the agent
             er = error_func(y, y_hats)
-            if er <= stop_error:
+            if er < stop_error:
                 print("EARLY STOP")
                 return weights, er, True
 
@@ -108,11 +115,13 @@ def genetic_algorithm(x, y, generations=100, num_agents=100, stop_error=0.001, a
         return new_weights
 
     num_inputs = len(x[0])
+    # add a bias node to the input layer, with a value of 1
     temp = []
     for row in range(len(x)):
         temp.append(np.append(x[row], 1))
     x = np.array(temp)
 
+    # initial list of weights (a generation)
     low = generate_agents(num_agents)
 
     for generation in range(generations):

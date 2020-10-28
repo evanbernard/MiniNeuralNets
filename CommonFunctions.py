@@ -22,7 +22,7 @@ def relu(x, deriv=False):
     return max(0, x)
 
 
-def leaky_relu(x, deriv=False, nslope=0.1):
+def leaky_relu(x, deriv=False, nslope=0.05):
     if deriv:
         if x > 0:
             return 1
@@ -42,20 +42,33 @@ def nothing(x, deriv=False):
 # Error Functions ------------------------------------------------------------------------------------------------------
 # mean squared error
 def mse(y, y_hats, deriv=False):
+    if type(y) is not np.ndarray:
+        y = np.array([y])
+    if type(y_hats) is not np.ndarray:
+        y_hats = np.array([y_hats])
+    n = len(y_hats)
     if deriv:
-        return 2 * np.sum(y_hats - y)/len(y_hats)
-    return np.sum((y - y_hats) ** 2) / len(y_hats)
+        return 2 * np.sum(y_hats - y) / n
+    return np.sum(np.power((y - y_hats), 2)) / n
 
 
 # mean absolute error
 def mae(y, y_hats, deriv=False):
+    if type(y) is not np.ndarray:
+        y = np.array([y])
+    if type(y_hats) is not np.ndarray:
+        y_hats = np.array([y_hats])
+    n = len(y_hats)
     if deriv:
-        if y_hats > y:
-            return 1
-        if y > y_hats:
-            return -1
-        else:
-            # the derivative isn't defined when the predicted equals the actual, but in our case we don't want to
-            # change the weights when this happens, so we set the output to 0
-            return 0
-    return np.sum(abs(y - y_hats)) / len(y_hats)
+        err = np.array([])
+        for i in range(n):
+            if y_hats[i] > y[i]:
+                err = np.append(err, 1)
+            elif y[i] > y_hats[i]:
+                err = np.append(err, -1)
+            else:
+                # the derivative isn't defined when the predicted equals the actual, but in our case we don't want to
+                # change the weights when this happens, so we set the output to 0
+                err = np.append(err, 0)
+        return err
+    return np.sum(abs(y - y_hats)) / n

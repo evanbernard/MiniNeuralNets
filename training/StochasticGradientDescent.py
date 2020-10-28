@@ -50,20 +50,18 @@ def sgd(activation, error_func, x, y, epochs=1000, learning_rate=0.01):
     # we want a vector of length n + 1 (one extra for a bias) for weights, where the values are between -1 and 1
     weights = (np.random.rand(1, num_inputs + 1) * 2 - 1)[0]
     tup = list(zip(x, y))
-
     # In each epoch, we run the model on every weight for every testing input and output, and adjust each weight once
     for epoch in range(epochs):
         # since we update every weight as soon as we calculate the gradient, we need to randomize it every epoch
         np.random.shuffle(tup)
         x = [x1 for x1, _ in tup]
         y = [x2 for _, x2 in tup]
-
         for i in range(len(x)):
             input_layer = x[i]
             neuron_val = np.dot(weights, input_layer)
             y_hat = activation(neuron_val)
             # the delta rule, a generalization of the partial derivative of the cost function, thanks to backpropagation
-            delta = activation(neuron_val, deriv=True) * error_func(y[i], [y_hat], deriv=True)
+            delta = activation(neuron_val, deriv=True) * error_func(y[i], y_hat, deriv=True)
             for k in range(num_inputs + 1):
                 adjustment = delta * learning_rate * x[i][k]
                 # we update each individual weight once per trial

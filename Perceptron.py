@@ -20,6 +20,8 @@ class Perceptron:
         self.er = 1
         self.activation = activation
         self.error = error
+        self.error_path = []
+        self.avg_diff_path = []
 
     def train(self, train_func, *args):
         self.weights, self.er = train_func(self.activation, self.error, *args)

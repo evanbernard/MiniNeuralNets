@@ -27,12 +27,12 @@ if __name__ == "__main__":
     nn.predict(input0)
 
     print("Stochastic Gradient Descent ########################################")
-    nn = Perceptron(activation=sigmoid, error=mse)
+    nn = Perceptron(activation=sigmoid, error=mae)
     nn.train(sgd, x, y, 1000, 1)
     nn.predict(input0)
 
     print("Batch Gradient Descent #############################################")
-    nn = Perceptron(activation=sigmoid, error=mse)
+    nn = Perceptron(activation=sigmoid, error=mae)
     nn.train(bgd, x, y, 1000, 1)
     nn.predict(input0)
 
